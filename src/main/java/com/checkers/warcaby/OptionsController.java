@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -45,7 +46,7 @@ public class OptionsController {
 
     @FXML
     protected void close() {
-        Stage stageClose = (Stage) saveBtn.getScene().getWindow();
+        Stage stageClose = (Stage) closeBtn.getScene().getWindow();
 
         if ((dpiCombo.getValue() != null) || (p1Chooser.getValue() != Color.WHITE) || (p2Chooser.getValue() != Color.BLACK)) {
             Alert alertClose = new Alert(Alert.AlertType.CONFIRMATION);
@@ -67,6 +68,20 @@ public class OptionsController {
         }
         else{
             stageClose.close();
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                fxmlLoader.setLocation(getClass().getResource("mainMenu.fxml"));
+                Stage stage2 = (Stage) closeBtn.getScene().getWindow();
+                stage2.close();
+                Scene scene = new Scene(fxmlLoader.load());
+                Stage stage = new Stage();
+                stage.getIcons().add(new Image("file:src/main/resources/com/checkers/warcaby/icon.png"));
+                stage.setTitle("Warcaby - opcje");
+                stage.setScene(scene);
+                stage.show();
+            } catch (IOException e) {
+                System.out.println("Błąd przy otwieraniu okna: " + e);
+            }
         }
     }
 

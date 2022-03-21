@@ -70,7 +70,7 @@ public class MainController {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-
+            System.out.println("Błąd przy otwieraniu okna: " + e);
         }
 
     }
