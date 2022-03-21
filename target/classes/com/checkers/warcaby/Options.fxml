@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="700.0" onMouseEntered="#setDpiCombo" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.checkers.warcaby.OptionsController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="99.0" minHeight="10.0" prefHeight="99.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="216.0" minHeight="10.0" prefHeight="137.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="172.0" minHeight="10.0" prefHeight="154.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="150.0" minHeight="10.0" prefHeight="121.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Ustawienia gry" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+         <GridPane.margin>
+            <Insets top="10.0" />
+         </GridPane.margin>
+         <font>
+            <Font name="Calibri Light" size="26.0" />
+         </font>
+      </Text>
+      <ImageView fitHeight="75.0" fitWidth="77.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+         <image>
+            <Image url="@icon.png" />
+         </image>
+         <GridPane.margin>
+            <Insets left="8.0" top="8.0" />
+         </GridPane.margin>
+      </ImageView>
+      <GridPane minHeight="215.0" minWidth="700.0" prefHeight="215.0" prefWidth="700.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="91.0" minHeight="10.0" prefHeight="91.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="83.0" minHeight="10.0" prefHeight="83.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="83.0" minHeight="10.0" prefHeight="83.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Rozdzielczość" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+               <GridPane.margin>
+                  <Insets bottom="15.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <ComboBox fx:id="dpiCombo" prefWidth="150.0" promptText="Wybierz" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+               <GridPane.margin>
+                  <Insets top="10.0" />
+               </GridPane.margin></ComboBox>
+            <Label fx:id="resolutionLabel" text="Aktualna rozdzielczość: " GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+               <GridPane.margin>
+                  <Insets left="30.0" top="20.0" />
+               </GridPane.margin>
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Line endX="370.5" startX="-100.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
+         </children>
+      </GridPane>
+      <Line endX="249.5" startX="-100.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets top="7.0" />
+         </GridPane.margin>
+      </Line>
+      <GridPane GridPane.rowIndex="2">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="56.0" minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="94.0" minHeight="10.0" prefHeight="86.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <GridPane prefHeight="55.0" prefWidth="600.0" GridPane.rowIndex="1">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="38.0" minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="53.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gracz 1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gracz 2(AI)" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+                  <ColorPicker fx:id="p1Chooser" promptText="Wybierz kolor" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                  </ColorPicker>
+                  <ColorPicker fx:id="p2Chooser" promptText="Wybierz kolor" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                  </ColorPicker>
+               </children>
+            </GridPane>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Kolor figur" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Text>
+         </children>
+      </GridPane>
+      <Button fx:id="closeBtn" mnemonicParsing="false" onAction="#close" prefHeight="36.0" prefWidth="81.0" text="Powrót" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
+         <GridPane.margin>
+            <Insets bottom="10.0" />
+         </GridPane.margin>
+      </Button>
+      <Button fx:id="saveBtn" mnemonicParsing="false" onAction="#saveOptions" prefHeight="36.0" prefWidth="136.0" text="Zapisz zmiany" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="TOP">
+         <GridPane.margin>
+            <Insets top="10.0" />
+         </GridPane.margin>
+      </Button>
+   </children>
+</GridPane>
