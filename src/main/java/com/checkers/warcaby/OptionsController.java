@@ -10,9 +10,11 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+
 
 public class OptionsController {
 
@@ -37,11 +39,11 @@ public class OptionsController {
 
     private ObservableList<String> dpiList = FXCollections.observableArrayList("716x539", "1366x768", "1920x1080");
 
+
     public void initialize() {
         dpiCombo.setItems(dpiList);
         p1Chooser.setValue(Color.WHITE);
         p2Chooser.setValue(Color.BLACK);
-
     }
 
     @FXML
@@ -76,7 +78,7 @@ public class OptionsController {
                 Scene scene = new Scene(fxmlLoader.load());
                 Stage stage = new Stage();
                 stage.getIcons().add(new Image("file:src/main/resources/com/checkers/warcaby/icon.png"));
-                stage.setTitle("Warcaby - opcje");
+                stage.setTitle("Warcaby!");
                 stage.setScene(scene);
                 stage.show();
             } catch (IOException e) {

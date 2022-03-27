@@ -10,22 +10,40 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="1080.0" minWidth="1920.0" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.checkers.warcaby.MainController">
    <children>
-      <Text layoutX="868.0" layoutY="127.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Warcaby">
+      <Text layoutX="856.0" layoutY="123.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Warcaby">
          <font>
-            <Font size="48.0" />
+            <Font size="54.0" />
          </font>
       </Text>
-      <Line endX="181.5" layoutX="521.0" layoutY="174.0" startX="696.0" />
-      <ImageView fitHeight="150.0" fitWidth="150.0" layoutX="1678.0" layoutY="39.0" pickOnBounds="true" preserveRatio="true">
+      <Line endX="141.0" layoutX="521.0" layoutY="174.0" startX="734.0" />
+      <ImageView fitHeight="174.0" fitWidth="184.0" layoutX="1644.0" layoutY="39.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@icon.png" />
          </image>
       </ImageView>
-      <Button fx:id="newGameBtn" layoutX="846.0" layoutY="268.0" mnemonicParsing="false" onAction="#newGame" prefHeight="50.0" prefWidth="200.0" text="Nowa gra" />
-      <Button fx:id="optionsBtn" layoutX="846.0" layoutY="428.0" mnemonicParsing="false" onAction="#openOptions" prefHeight="50.0" prefWidth="200.0" text="Opcje" />
-      <Button fx:id="loadGameBtn" layoutX="846.0" layoutY="345.0" mnemonicParsing="false" onAction="#loadGame" prefHeight="50.0" prefWidth="200.0" text="Wczytaj grę" />
-      <Button fx:id="exitBtn" layoutX="846.0" layoutY="509.0" mnemonicParsing="false" onAction="#exitGame" prefHeight="50.0" prefWidth="200.0" text="Wyjście" />
-      <Button layoutX="1753.0" layoutY="891.0" mnemonicParsing="false" onAction="#projectSubject" prefHeight="50.0" prefWidth="118.0" text="Temat projektu" />
-      <Button layoutX="65.0" layoutY="916.0" mnemonicParsing="false" onAction="#projectTeam" prefHeight="50.0" prefWidth="102.0" text="Zespół" />
+      <Button fx:id="newGameBtn" layoutX="846.0" layoutY="268.0" mnemonicParsing="false" onAction="#newGame" prefHeight="50.0" prefWidth="200.0" text="Nowa gra">
+         <font>
+            <Font size="18.0" />
+         </font></Button>
+      <Button fx:id="optionsBtn" layoutX="846.0" layoutY="428.0" mnemonicParsing="false" onAction="#openOptions" prefHeight="50.0" prefWidth="200.0" text="Opcje">
+         <font>
+            <Font size="18.0" />
+         </font></Button>
+      <Button fx:id="loadGameBtn" layoutX="846.0" layoutY="345.0" mnemonicParsing="false" onAction="#loadGame" prefHeight="50.0" prefWidth="200.0" text="Wczytaj grę">
+         <font>
+            <Font size="18.0" />
+         </font></Button>
+      <Button fx:id="exitBtn" layoutX="846.0" layoutY="509.0" mnemonicParsing="false" onAction="#exitGame" prefHeight="50.0" prefWidth="200.0" text="Wyjście">
+         <font>
+            <Font size="18.0" />
+         </font></Button>
+      <Button layoutX="1707.0" layoutY="891.0" mnemonicParsing="false" onAction="#projectSubject" prefHeight="50.0" prefWidth="164.0" text="Temat projektu">
+         <font>
+            <Font size="18.0" />
+         </font></Button>
+      <Button layoutX="65.0" layoutY="916.0" mnemonicParsing="false" onAction="#projectTeam" prefHeight="50.0" prefWidth="102.0" text="Zespół">
+         <font>
+            <Font size="18.0" />
+         </font></Button>
    </children>
 </AnchorPane>

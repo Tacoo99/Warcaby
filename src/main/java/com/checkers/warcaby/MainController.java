@@ -1,7 +1,9 @@
 package com.checkers.warcaby;
 
 import javafx.fxml.FXML;
+import com.checkers.warcaby.NewGame;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -13,9 +15,11 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class MainController {
+public class MainController implements Initializable {
 
     @FXML
     private Button exitBtn;
@@ -29,14 +33,23 @@ public class MainController {
     @FXML
     private Button optionsBtn;
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
+    }
+
     @FXML
     protected void getColors(){
 
     }
+
     @FXML
-    protected void newGame() {
-        setAlert(Alert.AlertType.INFORMATION, "Nowa gra!", "Ten przycisk rozpocznie nową grę");
+    public void newGame() {
+        NewGame newgame = new NewGame();
+        newgame.start();
     }
+
+
 
     @FXML
     protected void loadGame(){
@@ -117,4 +130,5 @@ public class MainController {
 
         alert.showAndWait();
     }
+
 }
