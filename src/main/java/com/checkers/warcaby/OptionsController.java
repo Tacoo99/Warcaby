@@ -37,7 +37,7 @@ public class OptionsController {
     private ColorPicker p2Chooser;
 
 
-    private ObservableList<String> dpiList = FXCollections.observableArrayList("716x539", "1366x768", "1920x1080");
+    private final ObservableList<String> dpiList = FXCollections.observableArrayList("716x539", "1366x768", "1920x1080");
 
 
     public void initialize() {
@@ -61,10 +61,10 @@ public class OptionsController {
             ((Button) alertClose.getDialogPane().lookupButton(ButtonType.CANCEL)).setText("Nie");
             Optional<ButtonType> resultClose = alertClose.showAndWait();
 
-            if (resultClose.get() == ButtonType.OK) {
+            if (resultClose.isPresent() && resultClose.get() == ButtonType.OK) {
                 alertClose.close();
                 stageClose.close();
-            } else if (resultClose.get() == ButtonType.CANCEL) {
+            } else if (resultClose.isPresent() && resultClose.get() == ButtonType.CANCEL) {
                 alertClose.close();
             }
         }
@@ -96,8 +96,17 @@ public class OptionsController {
         resolutionLabel.setText("Aktualna rozdzielczość: " + mergedRes);
     }
 
+
     @FXML
     protected void saveOptions() {
+
+        FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("mainMenu.fxml"));
+        try {
+            mainLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        MainController mainController = mainLoader.getController();
 
         String dpi = "";
         String color1 = "";
@@ -118,7 +127,7 @@ public class OptionsController {
         ((Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL)).setText("Nie");
         Optional<ButtonType> result = alert.showAndWait();
 
-        if (result.get() == ButtonType.OK) {
+        if (result.isPresent() && result.get() == ButtonType.OK) {
 
             if( p1Chooser.getValue() != Color.WHITE ){
                 changedColor1 = true;
@@ -132,8 +141,21 @@ public class OptionsController {
                 changedDPI = true;
 
                 String getChosenDpi = dpiCombo.getValue();
-                if (Objects.equals(getChosenDpi, "1366x768")) {
 
+                if (Objects.equals(getChosenDpi, "716x539")) {
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("mainMenu.fxml"));
+                        Stage stage3 = (Stage) saveBtn.getScene().getWindow();
+                        Scene scene = new Scene(loader.load());
+                        stage3.setScene(scene);
+                        stage3.setX(0);
+                        stage3.setY(0);
+                    } catch (IOException io) {
+                        io.printStackTrace();
+                    }
+                }
+
+                if (Objects.equals(getChosenDpi, "1366x768")) {
 
                     try {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("mainMenuHD.fxml"));
@@ -162,11 +184,17 @@ public class OptionsController {
             }
 
             if(changedColor1){
-                color1 = "\nKolor pierwszego gracza: " + p1Chooser.getValue();
+                Color color1Hex = p1Chooser.getValue();
+                color1 = "\nKolor pierwszego gracza: " + color1Hex;
+                mainController.setColor1(color1Hex);
+
+
             }
 
             if(changedColor2){
-                color2 = "\nKolor drugiego gracza oraz AI: " + p2Chooser.getValue();
+                Color color2Hex = p2Chooser.getValue();
+                color2 = "\nKolor drugiego gracza oraz AI: " + color2Hex;
+                mainController.setColor2(color2Hex);
             }
 
             if(changedDPI){

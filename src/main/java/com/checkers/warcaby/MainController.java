@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -19,7 +20,7 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class MainController implements Initializable {
+public class MainController{
 
     @FXML
     private Button exitBtn;
@@ -33,14 +34,16 @@ public class MainController implements Initializable {
     @FXML
     private Button optionsBtn;
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    Color player1Color, player2Color;
 
+    public void setColor1(Color player1){
+        player1Color = player1;
+        System.out.println(player1);
     }
 
-    @FXML
-    protected void getColors(){
-
+    public void setColor2(Color player2){
+        player2Color = player2;
+        System.out.println(player2);
     }
 
     @FXML
