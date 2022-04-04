@@ -34,21 +34,44 @@ public class MainController{
     @FXML
     private Button optionsBtn;
 
-    Color player1Color, player2Color;
+    static Color player1Color;
+    static Color player2Color;
 
-    public void setColor1(Color player1){
+    static Color king1Color;
+    static Color king2Color;
+
+
+    public void setColors(Color player1, Color player2, Color king1, Color king2){
         player1Color = player1;
-        System.out.println(player1);
+        player2Color = player2;
+        king1Color = king1;
+        king2Color = king2;
+        System.out.println("Gracz 1 - kolor: " + player1Color);
+        System.out.println("Gracz 2 - kolor: " + player2Color);
+        System.out.println("Gracz 1 - król: " + king1Color);
+        System.out.println("Gracz 2 - król: " + king2Color);
     }
 
-    public void setColor2(Color player2){
-        player2Color = player2;
-        System.out.println(player2);
+    public static Color setColor1(){
+        return player1Color;
+    }
+
+    public static Color setColor2(){
+        return player2Color;
+    }
+
+    public static Color setKing1(){
+        return king1Color;
+    }
+
+    public static Color setKing2(){
+        return king2Color;
     }
 
     @FXML
     public void newGame() {
         NewGame newgame = new NewGame();
+        newgame.setColors(player1Color,player2Color, king1Color, king2Color);
         newgame.start();
     }
 
