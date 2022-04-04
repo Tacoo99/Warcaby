@@ -15,7 +15,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="698.0" onMouseEntered="#setDpiCombo" prefHeight="707.0" prefWidth="699.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.checkers.warcaby.OptionsController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="698.0" onMouseEntered="#setDpiCombo" prefHeight="707.0" prefWidth="699.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.checkers.warcaby.OptionsController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
   </columnConstraints>
@@ -97,8 +97,8 @@
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Text>
-                  <ColorPicker fx:id="p2Chooser1" layoutX="478.0" layoutY="142.0" promptText="Wybierz kolor" />
-                  <ColorPicker fx:id="p1Chooser1" layoutX="99.0" layoutY="142.0" promptText="Wybierz kolor" />
+                  <ColorPicker fx:id="p2Chooser" layoutX="478.0" layoutY="142.0" promptText="Wybierz kolor" />
+                  <ColorPicker fx:id="p1Chooser" layoutX="99.0" layoutY="142.0" promptText="Wybierz kolor" />
                   <Text layoutX="511.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Gracz 2">
                      <font>
                         <Font size="18.0" />
