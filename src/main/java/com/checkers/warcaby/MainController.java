@@ -70,12 +70,13 @@ public class MainController{
 
     @FXML
     public void newGame() {
+        Stage mainMenu = (Stage) newGameBtn.getScene().getWindow();
+        mainMenu.close();
+
         NewGame newgame = new NewGame();
-        newgame.setColors(player1Color,player2Color, king1Color, king2Color);
+        newgame.setColors(player1Color, player2Color, king1Color, king2Color);
         newgame.start();
     }
-
-
 
     @FXML
     protected void loadGame(){
@@ -85,7 +86,7 @@ public class MainController{
         fileChooser.setTitle("Wczytaj plik");
         Stage stage = (Stage) loadGameBtn.getScene().getWindow();
         File file = fileChooser.showOpenDialog(stage);
-        if(file.getName().isBlank()){
+        if (file == null){
             setAlert(Alert.AlertType.ERROR,"Wystąpił błąd", "Nie wybrano pliku!" );
         }
         else {

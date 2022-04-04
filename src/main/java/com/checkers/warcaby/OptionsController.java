@@ -117,14 +117,6 @@ public class OptionsController {
     @FXML
     protected void saveOptions() {
 
-        FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("mainMenu.fxml"));
-        try {
-            mainLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        MainController mainController = mainLoader.getController();
-
         String dpi = "";
         String color1 = "";
         String color2 = "";
@@ -174,50 +166,16 @@ public class OptionsController {
                 String getChosenDpi = dpiCombo.getValue();
 
                 if (Objects.equals(getChosenDpi, "716x539")) {
-                    try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("mainMenu.fxml"));
-                        Stage stage3 = (Stage) saveBtn.getScene().getWindow();
-                        Scene scene = new Scene(loader.load());
-                        stage3.setScene(scene);
-                        stage3.setX(0);
-                        stage3.setY(0);
-                        stage3.setResizable(false);
-                        mainController.setColors(p1Chooser.getValue(), p2Chooser.getValue(), p1King.getValue(), p2King.getValue());
-                    } catch (IOException io) {
-                        io.printStackTrace();
-                    }
+                    setScreen("mainMenu.fxml");
                 }
 
                 if (Objects.equals(getChosenDpi, "1366x768")) {
 
-                    try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("mainMenuHD.fxml"));
-                        Stage stage2 = (Stage) saveBtn.getScene().getWindow();
-                        Scene scene = new Scene(loader.load());
-                        stage2.setScene(scene);
-                        stage2.setX(1366/2);
-                        stage2.setY(768/2);
-                        stage2.setResizable(false);
-                        mainController.setColors(p1Chooser.getValue(), p2Chooser.getValue(), p1King.getValue(), p2King.getValue());
-
-                    } catch (IOException io) {
-                        io.printStackTrace();
-                    }
+                    setScreen("mainMenuHD.fxml");
                 }
 
                 if (Objects.equals(getChosenDpi, "1920x1080")) {
-                    try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("mainMenuFHD.fxml"));
-                        Stage stage3 = (Stage) saveBtn.getScene().getWindow();
-                        Scene scene = new Scene(loader.load());
-                        stage3.setScene(scene);
-                        stage3.setResizable(false);
-                        stage3.setX(1920/2);
-                        stage3.setY(1080/2);
-                        mainController.setColors(p1Chooser.getValue(), p2Chooser.getValue(), p1King.getValue(), p2King.getValue());
-                    } catch (IOException io) {
-                        io.printStackTrace();
-                    }
+                    setScreen("mainMenuFHD.fxml");
                 }
             }
 
@@ -249,15 +207,8 @@ public class OptionsController {
                     || !(Objects.equals(king1,"")) || !(Objects.equals(king2,""))
             )  {
                 setAlert(Alert.AlertType.INFORMATION, "Zatwierdzono zmiany",dpi + color1 + color2 + king1 + king2);
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("mainMenu.fxml"));
-                    Stage stage3 = (Stage) saveBtn.getScene().getWindow();
-                    Scene scene = new Scene(loader.load());
-                    stage3.setScene(scene);
-                    stage3.setResizable(false);
-                    mainController.setColors(p1Chooser.getValue(), p2Chooser.getValue(), p1King.getValue(), p2King.getValue());
-                } catch (IOException io) {
-                    io.printStackTrace();
+                if(Objects.equals(dpi,"")){
+                    setScreen("mainMenu.fxml");
                 }
             }
 
@@ -265,6 +216,30 @@ public class OptionsController {
                 setAlert(Alert.AlertType.ERROR, "Wystąpił błąd","Nie wybrano żadnych zmian!");
             }
 
+        }
+    }
+
+    private void setScreen(String filename){
+
+        FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("mainMenu.fxml"));
+        try {
+            mainLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        MainController mainController = mainLoader.getController();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(filename));
+            Stage stage = (Stage) saveBtn.getScene().getWindow();
+            Scene scene = new Scene(loader.load());
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.getIcons().add(new Image("file:src/main/resources/com/checkers/warcaby/icon.png"));
+            stage.centerOnScreen();
+            mainController.setColors(p1Chooser.getValue(), p2Chooser.getValue(), p1King.getValue(), p2King.getValue());
+        } catch (IOException io) {
+            io.printStackTrace();
         }
     }
 
