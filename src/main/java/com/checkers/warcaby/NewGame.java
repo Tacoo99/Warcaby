@@ -39,6 +39,7 @@ public class NewGame {
         }
         else{
             System.out.println("Kolor króla gracza 1 ustawiono na domyślny");
+            king1Color = Color.BLUEVIOLET;
         }
         if(king2Color != null) {
             king2Color = king2;
@@ -46,8 +47,8 @@ public class NewGame {
         }
         else{
             System.out.println("Kolor króla gracza 1 ustawiono na domyślny");
+            king2Color = Color.CYAN;
         }
-
 
         //Kolory---------------------------------------------------------------------------
 
@@ -57,6 +58,7 @@ public class NewGame {
         }
         else{
             System.out.println("Kolor gracza 1 ustawiono na domyślny");
+            player1Color = Color.GREY;
         }
         if(player2 != null) {
             player2Color = player2;
@@ -64,6 +66,7 @@ public class NewGame {
         }
         else {
             System.out.println("Kolor gracza 2 ustawiono na domyślny");
+            player2Color = Color.RED;
         }
 
     }
@@ -76,9 +79,11 @@ public class NewGame {
             circle.setCenterY(165 + state.getMinPieceList().get(i).getPosition().getxCoordinate() * 90);
             circle.setCenterX(165 + state.getMinPieceList().get(i).getPosition().getyCoordinate() * 90);
             if(state.getMinPieceList().get(i).isKing()) {
-                circle.setFill(Objects.requireNonNullElse(king1Color, Color.BLUEVIOLET));
+                circle.setFill(king1Color);
             }
-            circle.setFill(Objects.requireNonNullElse(player1Color, Color.RED));
+            else{
+               circle.setFill(player1Color);
+            }
             circle.setRadius(40);
             circle.setFocusTraversable(true);
             final Alert[] alert = new Alert[1];
@@ -155,11 +160,8 @@ public class NewGame {
             Circle circle = new Circle();
             circle.setCenterY(165 + state.getMaxPieceList().get(i).getPosition().getxCoordinate() * 90);
             circle.setCenterX(165 + state.getMaxPieceList().get(i).getPosition().getyCoordinate() * 90);
-            if (state.getMaxPieceList().get(i).isKing()){
-                circle.setFill(Objects.requireNonNullElse(king2Color, Color.CYAN));
-            }
-            if(player2Color == null) {
-                circle.setFill(Color.GREY);
+            if(state.getMaxPieceList().get(i).isKing()) {
+                circle.setFill(king2Color);
             }
             else{
                 circle.setFill(player2Color);
