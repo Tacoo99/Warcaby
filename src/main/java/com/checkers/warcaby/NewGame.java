@@ -1,7 +1,9 @@
 package com.checkers.warcaby;
 
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
@@ -15,8 +17,14 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
+
 
 public class NewGame {
 
@@ -28,6 +36,7 @@ public class NewGame {
     Color player2Color = MainController.setColor2();
     Color king1Color = MainController.setKing1();
     Color king2Color = MainController.setKing2();
+
 
     public void setColors(Color player1, Color player2, Color king1, Color king2){
 
@@ -71,8 +80,24 @@ public class NewGame {
 
     }
 
+    private void writeToFile(String filename, String text){
+        try {
+            File file = new File(filename);
+            FileWriter fr = new FileWriter(file, true);
+            BufferedWriter br = new BufferedWriter(fr);
+            br.write(text);
+            br.newLine();
+            br.close();
+            fr.close();
+            System.out.println("Współrzędne wpisano do pliku: " + filename);
+        } catch (IOException e) {
+            System.out.println("Wystąpił błąd");
+            e.printStackTrace();
+        }
+    }
 
     void updateScene(Group root, Game game, Label chanceLabel, Label maxScoreLabel, Label minScoreLabel) {
+
         State state = game.getState();
         for (int i = 0; i < state.getMinPieceList().size(); i++) {
             Circle circle = new Circle();
@@ -98,7 +123,6 @@ public class NewGame {
                         int x = (int) (dragBaseY - 140) / 90;
 
                         Piece p = state.getBoard().get(new Coordinate(x, y));
-                        System.out.println(p.getPosition());
 
                         if (state.getStateActions().isEmpty()) System.out.println("Gracz2 wygrał");
 
@@ -123,6 +147,15 @@ public class NewGame {
 
                             c.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent1 -> {
                                 State s = state.getNextState(action);
+
+                                String player1X = String.valueOf(c.getCenterX());
+                                String player1Y = String.valueOf(c.getCenterY());
+                                String coordinations1 = "X: " + player1X.substring(0, player1X.length() - 4) + " Y: " + player1Y.substring(0, player1Y.length() - 4);
+                                //TODO
+                                // Dodać pobieranie cyfry oraz litery z tablicy, pewnie zrobię to za pomocą numeru indeksu przekazywanym w zmiennej, np. tablica.get(indeks)
+                                writeToFile("player1.save", coordinations1);
+
+
 
                                 if(s.getStateActions().isEmpty()) {
                                     Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
@@ -207,6 +240,14 @@ public class NewGame {
                                 State s = state.getNextState(action);
                                 game.setState(s);
 
+                                String player2X = String.valueOf(c.getCenterX());
+                                String player2Y = String.valueOf(c.getCenterY());
+                                String coordinations2 = "X: " + player2X.substring(0, player2X.length() - 4) + " Y: " + player2Y.substring(0, player2Y.length() - 4);
+                                //TODO
+                                // Dodać pobieranie cyfry oraz litery z tablicy, pewnie zrobię to za pomocą numeru indeksu przekazywanym w zmiennej, np. tablica.get(indeks)
+                                writeToFile("player2.save", coordinations2);
+
+
                                 if(s.getStateActions().isEmpty()) {
                                     Alert alert12 = new Alert(Alert.AlertType.INFORMATION);
                                     alert12.setTitle("Informacja");
@@ -253,8 +294,53 @@ public class NewGame {
         circles.clear();
     }
 
+
+
+    int chooseDifficulty() {
+        String[] arrayData = new String[]{"Ławy", "Normalny", "Trudny", "Zaawansownany", "Ekspert"};
+        List<String> dialogData = Arrays.asList(arrayData);
+
+        ChoiceDialog dialog = new ChoiceDialog(dialogData.get(0), dialogData);
+        dialog.setTitle("Trudność");
+        dialog.setHeaderText("Wybierz trudność gry");
+
+        Optional<String> result = dialog.showAndWait();
+        String selected = "Anulowano.";
+        if (result.isPresent()) {
+            selected = result.get();
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Wybieranie trudności gry");
+            alert.setHeaderText(null);
+            alert.setContentText("Nie można wystartować dopóki nie wybierzesz trudności gry.\nWychodzenie!");
+            alert.showAndWait();
+            Platform.exit();
+            System.exit(0);
+        }
+        System.out.println(selected);
+
+        switch (selected) {
+            case "Ławy" -> {
+                return 1;
+            }
+            case "Trudny" -> {
+                return 3;
+            }
+            case "Zaawansownany" -> {
+                return 4;
+            }
+            case "Ekspert" -> {
+                return 5;
+            }
+            default -> {
+                return 2;
+            }
+        }
+    }
+
     String chooseGameMode() {
-        final String [] arrayData = {"Czlowiek vs Czlowiek"};
+        final String [] arrayData = {"Człowiek vs AI", "Człowiek vs Człowiek", "AI vs AI", };
         List<String> dialogData = Arrays.asList(arrayData);
         ChoiceDialog dialog = new ChoiceDialog(dialogData.get(0), dialogData);
         dialog.setTitle("Wybierz tryb");
@@ -276,12 +362,35 @@ public class NewGame {
         return selected;
     }
 
+    void newWindow(String filename, int y, int x){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource(filename));
+            Stage stage = new Stage();
+            stage.setScene(new Scene(fxmlLoader.load()));
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.getIcons().add(new Image("file:src/main/resources/com/checkers/warcaby/icon.png"));
+            stage.setResizable(false);
+            stage.setX(x);
+            stage.setY(y);
+            stage.show();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    Player1Info player1Info = new Player1Info();
+    Player2Info player2Info = new Player2Info();
+
     //This is the first function that starts.
     public void start() {
+
         Canvas canvas = new Canvas();
         Group root = new Group(canvas);
         Scene scene= new Scene(root, 1000, 1000);
-        scene.getStylesheets().add("file:src/main/resources/com/checkers/warcaby/canvas-border.css");
+
+        newWindow("player1Info.fxml", 100, 200);
+        newWindow("player2Info.fxml", 100, 1500);
         Stack stack1 = new Stack();
         for (String s : Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H")) {
             stack1.push(s);
@@ -366,11 +475,26 @@ public class NewGame {
 
         String selected = chooseGameMode();
 
-        if ("Czlowiek vs Czlowiek".equals(selected)) {
-            oneHuman = true;
-            twoHuman = true;
-        } else {
-            throw new IllegalStateException("Nieobsługiwana wartość: " + selected);
+        switch (selected) {
+            case "AI vs AI" -> {
+                oneHuman = false;
+                twoHuman = false;
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Informacja");
+                alert.setHeaderText(null);
+                alert.setContentText("Kliknij myszą żeby AI wykonało kolejny ruch!.");
+                alert.showAndWait();
+            }
+            case "Człowiek vs AI" -> {
+                oneHuman = true;
+                twoHuman = false;
+                depth = chooseDifficulty();
+            }
+            case "Człowiek vs Człowiek" -> {
+                oneHuman = true;
+                twoHuman = true;
+            }
         }
     }
+
 }

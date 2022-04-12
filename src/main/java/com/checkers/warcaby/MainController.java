@@ -1,9 +1,7 @@
 package com.checkers.warcaby;
 
 import javafx.fxml.FXML;
-import com.checkers.warcaby.NewGame;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -16,9 +14,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 public class MainController{
 
@@ -39,7 +35,6 @@ public class MainController{
 
     static Color king1Color;
     static Color king2Color;
-
 
     public void setColors(Color player1, Color player2, Color king1, Color king2){
         player1Color = player1;
@@ -70,12 +65,30 @@ public class MainController{
 
     @FXML
     public void newGame() {
+
+        createFile("player1.save");
+        createFile("player2.save");
+
         Stage mainMenu = (Stage) newGameBtn.getScene().getWindow();
         mainMenu.close();
 
         NewGame newgame = new NewGame();
         newgame.setColors(player1Color, player2Color, king1Color, king2Color);
         newgame.start();
+    }
+
+    private void createFile(String filename){
+        try {
+            File myObj = new File(filename);
+            if (myObj.createNewFile()) {
+                System.out.println("Utworzono plik: " + myObj.getName());
+            } else {
+                System.out.println("Plik " + myObj.getName() + " już istnieje");
+            }
+        } catch (IOException e) {
+            System.out.println("Wystąpił błąd.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -130,7 +143,7 @@ public class MainController{
 
         Optional<ButtonType> result = alert.showAndWait();
 
-        if(result.get() == ButtonType.OK){
+        if(result.isPresent() && result.get() == ButtonType.OK){
             stage.close();
         }
         else if(result.get() == ButtonType.CANCEL){
@@ -154,7 +167,6 @@ public class MainController{
         alert.setHeaderText(null);
         alert.setTitle(title);
         alert.setContentText(text);
-
         alert.showAndWait();
     }
 

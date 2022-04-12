@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="700.0" prefWidth="225.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.checkers.warcaby.Player1Info">
+   <children>
+      <TextArea fx:id="player1TextField" editable="false" layoutY="49.0" prefHeight="655.0" prefWidth="225.0" promptText="Tutaj pojawią się ruchy gracza 1" />
+      <Text layoutX="59.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ruchy gracza 1">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>
