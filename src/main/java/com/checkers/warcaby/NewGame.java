@@ -1,14 +1,10 @@
 package com.checkers.warcaby;
 
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -17,13 +13,14 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Stream;
 
 
 public class NewGame {
@@ -31,6 +28,10 @@ public class NewGame {
     List<Circle> circles = new ArrayList<>();
     boolean oneHuman = true, twoHuman = true;
     int depth = 6;
+    Stack stack1 = new Stack();
+    Stack stack2 = new Stack();
+    String coordinations;
+    String coordinations2;
 
     Color player1Color = MainController.setColor1();
     Color player2Color = MainController.setColor2();
@@ -38,49 +39,45 @@ public class NewGame {
     Color king2Color = MainController.setKing2();
 
 
-    public void setColors(Color player1, Color player2, Color king1, Color king2){
+    public void setColors(Color player1, Color player2, Color king1, Color king2) {
 
         //Króle-------------------------------------------------------------------------
 
-        if(king1Color != null) {
+        if (king1Color != null) {
             king1Color = king1;
             System.out.println("Kolor króla gracza 1:" + king1Color);
-        }
-        else{
+        } else {
             System.out.println("Kolor króla gracza 1 ustawiono na domyślny");
             king1Color = Color.BLUEVIOLET;
         }
-        if(king2Color != null) {
+        if (king2Color != null) {
             king2Color = king2;
             System.out.println("Kolor króla gracza 2:" + king2Color);
-        }
-        else{
+        } else {
             System.out.println("Kolor króla gracza 1 ustawiono na domyślny");
             king2Color = Color.CYAN;
         }
 
         //Kolory---------------------------------------------------------------------------
 
-        if(player1 != null) {
+        if (player1 != null) {
             player1Color = player1;
             System.out.println("Kolor gracza 1:" + player1Color);
-        }
-        else{
+        } else {
             System.out.println("Kolor gracza 1 ustawiono na domyślny");
             player1Color = Color.GREY;
         }
-        if(player2 != null) {
+        if (player2 != null) {
             player2Color = player2;
             System.out.println("Kolor gracza 2:" + player2Color);
-        }
-        else {
+        } else {
             System.out.println("Kolor gracza 2 ustawiono na domyślny");
             player2Color = Color.RED;
         }
 
     }
 
-    private void writeToFile(String filename, String text){
+    private void writeToFile(String filename, String text) {
         try {
             File file = new File(filename);
             FileWriter fr = new FileWriter(file, true);
@@ -96,18 +93,17 @@ public class NewGame {
         }
     }
 
-    void updateScene(Group root, Game game, Label chanceLabel, Label maxScoreLabel, Label minScoreLabel) {
+    void updateScene(Group root, Game game, Label chanceLabel, Label maxScoreLabel, Label minScoreLabel, TextArea player1TextArea, TextArea player2TextArea) {
 
         State state = game.getState();
         for (int i = 0; i < state.getMinPieceList().size(); i++) {
             Circle circle = new Circle();
             circle.setCenterY(165 + state.getMinPieceList().get(i).getPosition().getxCoordinate() * 90);
             circle.setCenterX(165 + state.getMinPieceList().get(i).getPosition().getyCoordinate() * 90);
-            if(state.getMinPieceList().get(i).isKing()) {
+            if (state.getMinPieceList().get(i).isKing()) {
                 circle.setFill(king1Color);
-            }
-            else{
-               circle.setFill(player1Color);
+            } else {
+                circle.setFill(player1Color);
             }
             circle.setRadius(40);
             circle.setFocusTraversable(true);
@@ -115,8 +111,8 @@ public class NewGame {
             if (twoHuman) {
                 circle.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
                     clearScene(root);
-                    updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel);
-                    if (!game.getState().isMaxChance()){
+                    updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
+                    if (!game.getState().isMaxChance()) {
                         double dragBaseX = circle.getCenterX();
                         double dragBaseY = circle.getCenterY();
                         int y = (int) (dragBaseX - 140) / 90;
@@ -127,7 +123,8 @@ public class NewGame {
                         if (state.getStateActions().isEmpty()) System.out.println("Gracz2 wygrał");
 
                         List<Action> actions = new ArrayList<>();
-                        if(state.getStateActions().containsKey(p.getPosition())) actions = state.getStateActions().get(p.getPosition());
+                        if (state.getStateActions().containsKey(p.getPosition()))
+                            actions = state.getStateActions().get(p.getPosition());
                         else {
                             alert[0] = new Alert(Alert.AlertType.INFORMATION);
                             alert[0].setTitle("Informacja");
@@ -150,14 +147,19 @@ public class NewGame {
 
                                 String player1X = String.valueOf(c.getCenterX());
                                 String player1Y = String.valueOf(c.getCenterY());
-                                String coordinations1 = "X: " + player1X.substring(0, player1X.length() - 4) + " Y: " + player1Y.substring(0, player1Y.length() - 4);
-                                //TODO
-                                // Dodać pobieranie cyfry oraz litery z tablicy, pewnie zrobię to za pomocą numeru indeksu przekazywanym w zmiennej, np. tablica.get(indeks)
-                                writeToFile("player1.save", coordinations1);
+                                String cutX = player1X.substring(0, player1X.length() - 4);
+                                String cutY = player1Y.substring(0, player1X.length() - 4);
+
+                                String Xstr = String.valueOf(stack1.get(Integer.parseInt(cutX) - 1));
+                                String Ystr = String.valueOf(stack2.get(Integer.parseInt(cutY) - 1));
+
+                                coordinations = Xstr + " " + Ystr;
+
+                                System.out.println("Wykonano ruch " + coordinations);
+                                writeToFile("player2.save", coordinations);
 
 
-
-                                if(s.getStateActions().isEmpty()) {
+                                if (s.getStateActions().isEmpty()) {
                                     Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
                                     alert1.setTitle("Informacja");
                                     alert1.setHeaderText(null);
@@ -169,7 +171,7 @@ public class NewGame {
 
                                 game.setState(s);
                                 clearScene(root);
-                                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel);
+                                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
                                 if (!game.getState().isContinuedState()) game.getState().setMaxChance(true);
                                 else {
                                     alert[0] = new Alert(Alert.AlertType.INFORMATION);
@@ -181,22 +183,20 @@ public class NewGame {
                             });
                             root.getChildren().add(c);
                         }
-                    }
-                    else System.out.println("Tura gracza nr1");
+                    } else System.out.println("Tura gracza nr1");
                     mouseEvent.consume();
                 });
             }
             circles.add(circle);
             root.getChildren().add(circle);
         }
-        for (int i = 0; i < state.getMaxPieceList().size(); i++){
+        for (int i = 0; i < state.getMaxPieceList().size(); i++) {
             Circle circle = new Circle();
             circle.setCenterY(165 + state.getMaxPieceList().get(i).getPosition().getxCoordinate() * 90);
             circle.setCenterX(165 + state.getMaxPieceList().get(i).getPosition().getyCoordinate() * 90);
-            if(state.getMaxPieceList().get(i).isKing()) {
+            if (state.getMaxPieceList().get(i).isKing()) {
                 circle.setFill(king2Color);
-            }
-            else{
+            } else {
                 circle.setFill(player2Color);
             }
             circle.setRadius(40);
@@ -206,7 +206,7 @@ public class NewGame {
             if (oneHuman) {
                 circle.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
                     clearScene(root);
-                    updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel);
+                    updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
                     if (game.getState().isMaxChance()) {
                         double dragBaseX = circle.getCenterX();
                         double dragBaseY = circle.getCenterY();
@@ -218,7 +218,8 @@ public class NewGame {
                         if (p.isKing()) System.out.println("KRÓL");
 
                         List<Action> actions = new ArrayList<>();
-                        if(state.getStateActions().containsKey(p.getPosition())) actions = state.getStateActions().get(p.getPosition());
+                        if (state.getStateActions().containsKey(p.getPosition()))
+                            actions = state.getStateActions().get(p.getPosition());
                         else {
                             alert[0] = new Alert(Alert.AlertType.INFORMATION);
                             alert[0].setTitle("Informacja");
@@ -242,13 +243,18 @@ public class NewGame {
 
                                 String player2X = String.valueOf(c.getCenterX());
                                 String player2Y = String.valueOf(c.getCenterY());
-                                String coordinations2 = "X: " + player2X.substring(0, player2X.length() - 4) + " Y: " + player2Y.substring(0, player2Y.length() - 4);
-                                //TODO
-                                // Dodać pobieranie cyfry oraz litery z tablicy, pewnie zrobię to za pomocą numeru indeksu przekazywanym w zmiennej, np. tablica.get(indeks)
-                                writeToFile("player2.save", coordinations2);
+                                String cutX2 = player2X.substring(0, player2X.length() - 4);
+                                String cutY2 = player2Y.substring(0, player2X.length() - 4);
+                                String Xstr2 = String.valueOf(stack2.get(Integer.parseInt(cutY2) - 1));
+                                String Ystr2 = String.valueOf(stack1.get(Integer.parseInt(cutX2) - 1));
+
+                                coordinations2 = Xstr2 + " " + Ystr2;
+
+                                System.out.println("Wykonano ruch " + coordinations2);
+                                writeToFile("player1.save", coordinations2);
 
 
-                                if(s.getStateActions().isEmpty()) {
+                                if (s.getStateActions().isEmpty()) {
                                     Alert alert12 = new Alert(Alert.AlertType.INFORMATION);
                                     alert12.setTitle("Informacja");
                                     alert12.setHeaderText(null);
@@ -259,7 +265,7 @@ public class NewGame {
                                 }
 
                                 clearScene(root);
-                                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel);
+                                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
                                 System.out.println("Koniec tury gracza nr1");
                                 if (!game.getState().isContinuedState()) game.getState().setMaxChance(false);
                                 else {
@@ -273,8 +279,7 @@ public class NewGame {
                             });
                             root.getChildren().add(c);
                         }
-                    }
-                    else System.out.println("Tura gracza nr2");
+                    } else System.out.println("Tura gracza nr2");
                     mouseEvent.consume();
                 });
             }
@@ -285,6 +290,21 @@ public class NewGame {
         chanceLabel.setText(chanceLabelText);
         maxScoreLabel.setText("Punkty Gracza nr1 : " + state.getMaxScore());
         minScoreLabel.setText("Punkty Gracza nr2: " + state.getMinScore());
+
+        readFile("player1.save", player1TextArea);
+        readFile("player2.save", player2TextArea);
+    }
+
+    void readFile(String filename, TextArea textArea){
+        StringBuilder contentBuilder = new StringBuilder();
+        Path filePath = Path.of(filename);
+        try (Stream<String> stream
+                     = Files.lines(Paths.get(String.valueOf(filePath)), StandardCharsets.UTF_8)) {
+            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        textArea.setText(contentBuilder.toString());
     }
 
     void clearScene(Group root) {
@@ -293,7 +313,6 @@ public class NewGame {
         }
         circles.clear();
     }
-
 
 
     int chooseDifficulty() {
@@ -308,8 +327,7 @@ public class NewGame {
         String selected = "Anulowano.";
         if (result.isPresent()) {
             selected = result.get();
-        }
-        else {
+        } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Wybieranie trudności gry");
             alert.setHeaderText(null);
@@ -340,7 +358,7 @@ public class NewGame {
     }
 
     String chooseGameMode() {
-        final String [] arrayData = {"Człowiek vs AI", "Człowiek vs Człowiek", "AI vs AI", };
+        final String[] arrayData = {"Człowiek vs AI", "Człowiek vs Człowiek", "AI vs AI",};
         List<String> dialogData = Arrays.asList(arrayData);
         ChoiceDialog dialog = new ChoiceDialog(dialogData.get(0), dialogData);
         dialog.setTitle("Wybierz tryb");
@@ -349,8 +367,7 @@ public class NewGame {
         String selected = "anulowano.";
         if (result.isPresent()) {
             selected = (String) result.get();
-        }
-        else {
+        } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Wychodzenie");
             alert.setHeaderText(null);
@@ -362,54 +379,30 @@ public class NewGame {
         return selected;
     }
 
-    void newWindow(String filename, int y, int x){
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource(filename));
-            Stage stage = new Stage();
-            stage.setScene(new Scene(fxmlLoader.load()));
-            stage.initStyle(StageStyle.UNDECORATED);
-            stage.getIcons().add(new Image("file:src/main/resources/com/checkers/warcaby/icon.png"));
-            stage.setResizable(false);
-            stage.setX(x);
-            stage.setY(y);
-            stage.show();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    Player1Info player1Info = new Player1Info();
-    Player2Info player2Info = new Player2Info();
 
     //This is the first function that starts.
     public void start() {
 
         Canvas canvas = new Canvas();
         Group root = new Group(canvas);
-        Scene scene= new Scene(root, 1000, 1000);
+        Scene scene = new Scene(root, 1400, 1000);
 
-        newWindow("player1Info.fxml", 100, 200);
-        newWindow("player2Info.fxml", 100, 1500);
-        Stack stack1 = new Stack();
-        for (String s : Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H")) {
+        for (String s : Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H")) { //OŚ X
             stack1.push(s);
         }
-        Stack stack2 = new Stack();
-        for (String s : Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8")) {
+        for (String s : Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8")) { //OŚ Y
             stack2.push(s);
         }
 
 
         //Making the board. Stacking the squares.
         boolean red = true;
-        for(int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 Rectangle rectangle = new Rectangle(120 + 90 * i, 120 + 90 * j, 90, 90);
                 if (red) {
                     rectangle.setFill(Color.web("#ECDBD3"));
-                }
-                else {
+                } else {
                     rectangle.setFill(Color.web("#43251A"));
                 }
                 red = !red;
@@ -419,7 +412,7 @@ public class NewGame {
         }
         int x = 65;
         Text text;
-        for(int t = 0; t < 8; t++){
+        for (int t = 0; t < 8; t++) {
             x = x + 90;
             text = new Text((String) stack1.get(t));
             text.setFont(Font.font(45));
@@ -430,7 +423,7 @@ public class NewGame {
 
         int y = 90;
         Text text2;
-        for(int t = 0; t < 8; t++){
+        for (int t = 0; t < 8; t++) {
             y = y + 90;
             text2 = new Text((String) stack2.get(t));
             text2.setFont(Font.font(45));
@@ -438,6 +431,38 @@ public class NewGame {
             text2.setY(y);
             root.getChildren().add(text2);
         }
+
+        Label player1Moves = new Label("Ruchy gracza 1");
+        player1Moves.setFont(Font.font(15));
+        player1Moves.setLayoutX(920);
+        player1Moves.setLayoutY(120);
+        root.getChildren().add(player1Moves);
+
+
+        TextArea player1TextArea = new TextArea();
+        player1TextArea.setPromptText("Tutaj pojawią się ruchy gracza 1");
+        player1TextArea.setMinWidth(200);
+        player1TextArea.setMaxWidth(200);
+        player1TextArea.setMinHeight(600);
+        player1TextArea.setLayoutX(870);
+        player1TextArea.setLayoutY(150);
+        root.getChildren().add(player1TextArea);
+
+
+        Label player2Moves = new Label("Ruchy gracza 2");
+        player2Moves.setFont(Font.font(15));
+        player2Moves.setLayoutX(1200);
+        player2Moves.setLayoutY(120);
+        root.getChildren().add(player2Moves);
+
+        TextArea player2TextArea = new TextArea();
+        player2TextArea.setPromptText("Tutaj pojawią się ruchy gracza 2");
+        player2TextArea.setMinWidth(200);
+        player2TextArea.setMaxWidth(200);
+        player2TextArea.setMinHeight(600);
+        player2TextArea.setLayoutX(1150);
+        player2TextArea.setLayoutY(150);
+        root.getChildren().add(player2TextArea);
 
         Label chanceLabel = new Label("GRACZ 1: Twój ruch");
         chanceLabel.setFont(Font.font(15));
@@ -458,7 +483,7 @@ public class NewGame {
         root.getChildren().add(minScoreLabel);
 
         Game game = new Game();
-        updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel);
+        updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
         Stage primaryStage = new Stage();
         primaryStage.setTitle("Warcaby!");
         primaryStage.getIcons().add(new Image("file:src/main/resources/com/checkers/warcaby/icon.png"));
@@ -469,7 +494,7 @@ public class NewGame {
             if (!game.hasFinished()) {
                 game.playNextMove(oneHuman, twoHuman, depth);
                 clearScene(root);
-                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel);
+                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
             }
         });
 
