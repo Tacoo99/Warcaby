@@ -12,7 +12,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +35,8 @@ public class NewGame {
     Stack stack2 = new Stack();
     String coordinations;
     String coordinations2;
+    TextArea player1TextArea = new TextArea();
+    TextArea player2TextArea = new TextArea();
 
     Color player1Color = MainController.setColor1();
     Color player2Color = MainController.setColor2();
@@ -307,6 +312,29 @@ public class NewGame {
         textArea.setText(contentBuilder.toString());
     }
 
+    boolean checkFileExists(String filename){
+        boolean exists;
+        File f = new File(filename);
+        if (f.length() == 0) {
+            System.out.println("Plik " + filename + " jest pusty, nie wyświetlam okna");
+            exists = false;
+        } else {
+            System.out.println("Plik " + filename + " nie jest pusty, wyświetlam okno");
+            exists = true;
+        }
+        return exists;
+    }
+
+    void clearFile(String filename) {
+        try {
+            new FileWriter(filename, false).close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     void clearScene(Group root) {
         for (Circle circle : circles) {
             root.getChildren().remove(circle);
@@ -380,18 +408,81 @@ public class NewGame {
     }
 
 
+    private void closeWindowEvent(WindowEvent event) {
+        System.out.println("Wykryto chęc zamknięcia okna");
+
+        if( !(player1TextArea.getText().isEmpty() ) || !(player2TextArea.getText().isEmpty()) ){
+            System.out.println("Pola nie są puste");
+
+            Alert alertClose = new Alert(Alert.AlertType.CONFIRMATION);
+            alertClose.setHeaderText(null);
+            alertClose.setTitle("Gra w trakcie");
+            alertClose.setContentText("Czy chcesz zapisać stan gry?");
+            alertClose.initModality(Modality.APPLICATION_MODAL);
+            ((Button) alertClose.getDialogPane().lookupButton(ButtonType.OK)).setText("Tak");
+            ((Button) alertClose.getDialogPane().lookupButton(ButtonType.CANCEL)).setText("Nie");
+            Optional<ButtonType> resultClose = alertClose.showAndWait();
+
+            if (resultClose.isPresent() && resultClose.get() == ButtonType.OK) {
+                alertClose.close();
+                Alert confirmation = new Alert(Alert.AlertType.INFORMATION);
+                confirmation.setHeaderText(null);
+                confirmation.setTitle("Zapis stanu gry");
+                confirmation.setContentText("Stan gry został zapisany");
+                confirmation.show();
+
+
+            } else if (resultClose.isPresent() && resultClose.get() == ButtonType.CANCEL) {
+                clearFile("player1.save");
+                clearFile("player2.save");
+            }
+        }
+
+        else{
+            System.out.println("Pola są puste");
+        }
+    }
+
     //This is the first function that starts.
     public void start() {
 
         Canvas canvas = new Canvas();
         Group root = new Group(canvas);
         Scene scene = new Scene(root, 1400, 1000);
+        boolean loadSave = false;
 
         for (String s : Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H")) { //OŚ X
             stack1.push(s);
         }
         for (String s : Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8")) { //OŚ Y
             stack2.push(s);
+        }
+
+        boolean file1Exists = checkFileExists("player1.save");
+        boolean file2Exists = checkFileExists("player2.save");
+
+        if(file1Exists && file2Exists){
+
+            Alert alertClose = new Alert(Alert.AlertType.CONFIRMATION);
+            alertClose.setHeaderText(null);
+            alertClose.setTitle("Wczytywanie stanu gry");
+            alertClose.setContentText("Istnieje zapis gry. chcesz go wczytać?");
+            alertClose.initModality(Modality.APPLICATION_MODAL);
+            ((Button) alertClose.getDialogPane().lookupButton(ButtonType.OK)).setText("Tak");
+            ((Button) alertClose.getDialogPane().lookupButton(ButtonType.CANCEL)).setText("Nie");
+            Optional<ButtonType> resultClose = alertClose.showAndWait();
+
+            if (resultClose.isPresent() && resultClose.get() == ButtonType.OK) {
+                alertClose.close();
+                loadSave = true;
+                //TODO
+                //Ustawianie pionków na planszy
+
+            } else if (resultClose.isPresent() && resultClose.get() == ButtonType.CANCEL) {
+                clearFile("player1.save");
+                clearFile("player2.save");
+            }
+
         }
 
 
@@ -439,8 +530,8 @@ public class NewGame {
         root.getChildren().add(player1Moves);
 
 
-        TextArea player1TextArea = new TextArea();
         player1TextArea.setPromptText("Tutaj pojawią się ruchy gracza 1");
+        player1TextArea.setEditable(false);
         player1TextArea.setMinWidth(200);
         player1TextArea.setMaxWidth(200);
         player1TextArea.setMinHeight(600);
@@ -455,8 +546,9 @@ public class NewGame {
         player2Moves.setLayoutY(120);
         root.getChildren().add(player2Moves);
 
-        TextArea player2TextArea = new TextArea();
+
         player2TextArea.setPromptText("Tutaj pojawią się ruchy gracza 2");
+        player1TextArea.setEditable(false);
         player2TextArea.setMinWidth(200);
         player2TextArea.setMaxWidth(200);
         player2TextArea.setMinHeight(600);
@@ -490,6 +582,8 @@ public class NewGame {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
+
         scene.setOnMousePressed(mouseEvent -> {
             if (!game.hasFinished()) {
                 game.playNextMove(oneHuman, twoHuman, depth);
@@ -521,5 +615,4 @@ public class NewGame {
             }
         }
     }
-
 }
