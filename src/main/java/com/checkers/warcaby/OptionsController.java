@@ -57,7 +57,6 @@ public class OptionsController {
         p1King.setValue(Color.CYAN);
         p2King.setValue(Color.BLUEVIOLET);
 
-
     }
 
     @FXML
@@ -144,21 +143,39 @@ public class OptionsController {
 
         if (result.isPresent() && result.get() == ButtonType.OK) {
 
-            if( p1Chooser.getValue() != Color.GREY ){
+            Color p1 = p1Chooser.getValue();
+            Color p2 = p2Chooser.getValue();
+
+            Color p1king = p1King.getValue();
+            Color p2king = p2King.getValue();
+
+
+            if( p1.equals(p2) ){
+                setAlert(Alert.AlertType.ERROR, "Wystąpił błąd!","Kolory figur obu graczy nie mogą być takie same! ");
+                return;
+            }
+
+            if( p1king.equals(p2king)){
+                setAlert(Alert.AlertType.ERROR, "Wystąpił błąd!","Kolory króli obu graczy nie mogą być takie same! ");
+                return;
+            }
+
+            if( p1 != Color.GREY ){
                 changedColor1 = true;
             }
 
-            if( p2Chooser.getValue() != Color.RED ){
+            if( p2 != Color.RED ){
                 changedColor2 = true;
             }
 
-            if(p1King.getValue() !=Color.CYAN){
+            if(p1king !=Color.CYAN){
                 changedKing1 = true;
             }
 
-            if(p2King.getValue() != Color.BLUEVIOLET){
+            if(p2king != Color.BLUEVIOLET){
                 changedKing2 = true;
             }
+
 
             if (dpiCombo.getValue() != null) {
                 changedDPI = true;
