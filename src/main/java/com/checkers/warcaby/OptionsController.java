@@ -7,9 +7,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 
 import java.io.IOException;
 import java.util.Objects;
@@ -43,11 +45,7 @@ public class OptionsController {
     @FXML
     private Button saveBtn;
 
-
     private final ObservableList<String> dpiList = FXCollections.observableArrayList("716x539", "1366x768", "1920x1080");
-
-    public OptionsController() {
-    }
 
 
     public void initialize() {
