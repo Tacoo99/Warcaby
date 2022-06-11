@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -33,13 +32,29 @@ public class NewGame {
     int depth = 6;
     Stack stack1 = new Stack();
     Stack stack2 = new Stack();
+
+    ArrayList Xstack = new ArrayList();
+
+    ArrayList Ystack = new ArrayList();
+
+    ArrayList Xstack2 = new ArrayList();
+
+    ArrayList Ystack2 = new ArrayList();
     String coordinations;
     String coordinations2;
 
-    String encoded_coordinations;
-    String encoded_coordinations2;
+    boolean loadSave = false;
 
-    ImageView crownPicture = new ImageView();
+    String fromCoordinations;
+
+    String fromCoordinations2;
+
+    String encodedX;
+    String encodedY;
+
+    String encodedX2;
+    String encodedY2;
+
     TextArea player1TextArea = new TextArea();
     TextArea player2TextArea = new TextArea();
 
@@ -51,7 +66,7 @@ public class NewGame {
 
     public void setColors(Color player1, Color player2, Color king1, Color king2) {
 
-        //Króle-------------------------------------------------------------------------
+        //Króle--------------------------------------------------------------
 
         if (king1Color != null) {
             king1Color = king1;
@@ -103,13 +118,47 @@ public class NewGame {
         }
     }
 
-    void updateScene(Group root, Game game, Label chanceLabel, Label maxScoreLabel, Label minScoreLabel, TextArea player1TextArea, TextArea player2TextArea, ImageView crownPicture) {
+    void updateScene(Group root, Game game, Label chanceLabel, Label maxScoreLabel, Label minScoreLabel, TextArea player1TextArea, TextArea player2TextArea) {
 
         State state = game.getState();
+
+        int sizeX, sizeY, sizeX2, sizeY2;
+        sizeX = Xstack.size();
+        sizeY = Ystack.size();
+        sizeX2 = Xstack2.size();
+        sizeY2 = Ystack2.size();
+        int a = 0;
+
         for (int i = 0; i < state.getMinPieceList().size(); i++) {
             Circle circle = new Circle();
-            circle.setCenterY(165 + state.getMinPieceList().get(i).getPosition().getxCoordinate() * 90);
-            circle.setCenterX(165 + state.getMinPieceList().get(i).getPosition().getyCoordinate() * 90);
+
+            if(loadSave){
+
+                    String X = (String) Xstack.get(a);
+                    String Y = (String) Ystack.get(a);
+
+
+                    if (X != null) {
+
+                        System.out.println(sizeX);
+                        System.out.println(sizeY);
+                        int intX = Integer.parseInt(X);
+                        int intY = Integer.parseInt(Y);
+
+                        circle.setCenterY(165 + intX * 90);
+                        circle.setCenterX(165 + intY * 90);
+
+
+                    }
+
+            }
+
+            else {
+
+                circle.setCenterY(165 + state.getMinPieceList().get(i).getPosition().getxCoordinate() * 90);
+                circle.setCenterX(165 + state.getMinPieceList().get(i).getPosition().getyCoordinate() * 90);
+            }
+
             if (state.getMinPieceList().get(i).isKing()) {
 
                 circle.setFill(king1Color);
@@ -119,15 +168,20 @@ public class NewGame {
             }
             circle.setRadius(40);
             final Alert[] alert = new Alert[1];
+
             if (twoHuman) {
                 circle.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
                     clearScene(root);
-                    updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea, crownPicture);
+                    updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
                     if (!game.getState().isMaxChance()) {
                         double dragBaseX = circle.getCenterX();
                         double dragBaseY = circle.getCenterY();
                         int y = (int) (dragBaseX - 140) / 90;
                         int x = (int) (dragBaseY - 140) / 90;
+
+                        String X = String.valueOf(circle.getCenterX());
+                        String Y = String.valueOf(circle.getCenterY());
+                        fromCoordinations = cutXY(X,Y);
 
                         Piece p = state.getBoard().get(new Coordinate(x, y));
 
@@ -159,13 +213,13 @@ public class NewGame {
                                 String player1X = String.valueOf(c.getCenterX());
                                 String player1Y = String.valueOf(c.getCenterY());
                                 coordinations = cutXY(player1X, player1Y);
-                                encoded_coordinations = encodeXY(player1X, player1Y);
-
-
+                                encodedX = encodeX(player1X);
+                                encodedY = encodeY(player1Y);
 
                                 System.out.println("Wykonano ruch " + coordinations);
-                                writeToFile("player2.save", coordinations);
-                                writeToFile("save/player2-encoded.save", encoded_coordinations);
+                                writeToFile("player2.save", fromCoordinations + " --> " + coordinations);
+                                writeToFile("save/player2X.save", encodedX);
+                                writeToFile("save/player2Y.save", encodedY);
 
 
 
@@ -181,7 +235,7 @@ public class NewGame {
 
                                 game.setState(s);
                                 clearScene(root);
-                                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea, crownPicture);
+                                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
                                 if (!game.getState().isContinuedState()) game.getState().setMaxChance(true);
                                 else {
                                     alert[0] = new Alert(Alert.AlertType.INFORMATION);
@@ -200,10 +254,38 @@ public class NewGame {
             circles.add(circle);
             root.getChildren().add(circle);
         }
+
         for (int i = 0; i < state.getMaxPieceList().size(); i++) {
+
             Circle circle = new Circle();
-            circle.setCenterY(165 + state.getMaxPieceList().get(i).getPosition().getxCoordinate() * 90);
-            circle.setCenterX(165 + state.getMaxPieceList().get(i).getPosition().getyCoordinate() * 90);
+
+            if(loadSave){
+
+                String X2 = (String) Xstack2.get(a);
+                String Y2 = (String) Ystack2.get(a);
+
+
+                if (X2 != null) {
+
+                    System.out.println(sizeX);
+                    System.out.println(sizeY);
+                    int intX2 = Integer.parseInt(X2);
+                    int intY2 = Integer.parseInt(Y2);
+
+                    circle.setCenterY(165 + intX2 * 90);
+                    circle.setCenterX(165 + intY2 * 90);
+
+
+                }
+
+            }
+
+            else {
+                circle.setCenterY(165 + state.getMaxPieceList().get(i).getPosition().getxCoordinate() * 90);
+                circle.setCenterX(165 + state.getMaxPieceList().get(i).getPosition().getyCoordinate() * 90);
+            }
+
+
             if (state.getMaxPieceList().get(i).isKing()) {
                 circle.setFill(king2Color);
 
@@ -217,12 +299,16 @@ public class NewGame {
             if (oneHuman) {
                 circle.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
                     clearScene(root);
-                    updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea, crownPicture);
+                    updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
                     if (game.getState().isMaxChance()) {
                         double dragBaseX = circle.getCenterX();
                         double dragBaseY = circle.getCenterY();
                         int y = (int) (dragBaseX - 140) / 90;
                         int x = (int) (dragBaseY - 140) / 90;
+
+                        String X2 = String.valueOf(circle.getCenterX());
+                        String Y2 = String.valueOf(circle.getCenterY());
+                        fromCoordinations2 = cutXY(X2,Y2);
 
                         Piece p = state.getBoard().get(new Coordinate(x, y));
 
@@ -235,7 +321,7 @@ public class NewGame {
                             alert[0] = new Alert(Alert.AlertType.INFORMATION);
                             alert[0].setTitle("Informacja");
                             alert[0].setHeaderText(null);
-                            alert[0].setContentText("Pionek nie moze wykonac tego ruchu \nlub:\n1. Jest zablokowany. albo\n2. Mozesz zbic inny pionek");
+                            alert[0].setContentText("Pionek nie moze wykonac tego ruchu \nlub:\n1. Jest zablokowany albo\n2 mozesz zbic inny pionek");
                             alert[0].showAndWait();
                         }
 
@@ -247,9 +333,6 @@ public class NewGame {
                             c.setRadius(40);
                             c.setFocusTraversable(true);
                             circles.add(c);
-                            String X = String.valueOf(c.getCenterX());
-                            String Y = String.valueOf(c.getCenterY());
-
 
                             c.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent12 -> {
                                 State s = state.getNextState(action);
@@ -259,12 +342,14 @@ public class NewGame {
                                 String player2X = String.valueOf(c.getCenterX());
                                 String player2Y = String.valueOf(c.getCenterY());
                                 coordinations2 = cutXY(player2X, player2Y);
-                                encoded_coordinations2 = encodeXY(player2X, player2Y);
+                                encodedX2 = encodeX(player2X);
+                                encodedY2 = encodeY(player2Y);
 
 
                                 System.out.println("Wykonano ruch " + coordinations2);
-                                writeToFile("player1.save", coordinations2);
-                                writeToFile("save/player1-encoded.save", encoded_coordinations2);
+                                writeToFile("player1.save", fromCoordinations2 + " --> " + coordinations2);
+                                writeToFile("save/player1X.save", encodedX2);
+                                writeToFile("save/player1Y.save", encodedY2);
 
 
 
@@ -279,7 +364,7 @@ public class NewGame {
                                 }
 
                                 clearScene(root);
-                                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea, crownPicture);
+                                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
                                 System.out.println("Koniec tury gracza nr1");
                                 if (!game.getState().isContinuedState()) game.getState().setMaxChance(false);
                                 else {
@@ -309,6 +394,23 @@ public class NewGame {
         readFile("player2.save", player2TextArea);
     }
 
+    void readCoordinations(String filename, ArrayList stackname) {
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader(filename));
+            String line = reader.readLine();
+            stackname.add(line);
+
+            while (line != null) {
+                line = reader.readLine();
+                stackname.add(line);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     String cutXY(String X, String Y){
         String cutX = X.substring(0, X.length() - 4);
         String cutY = Y.substring(0, Y.length() - 4);
@@ -316,19 +418,26 @@ public class NewGame {
         String Xstr = String.valueOf(stack2.get(Integer.parseInt(cutY) - 1));
         String Ystr = String.valueOf(stack1.get(Integer.parseInt(cutX) - 1));
 
-        String coordinations = Xstr + " " + Ystr;
+        String coordination = Xstr + " " + Ystr;
 
-        return coordinations;
+        return coordination;
     }
 
-    String encodeXY(String X, String Y){
+    String encodeX(String X){
         String cutX = X.substring(0, X.length() - 4);
+
+
+        String coordination = cutX;
+
+        return coordination;
+    }
+
+    String encodeY(String Y){
         String cutY = Y.substring(0, Y.length() - 4);
 
+        String coordination = cutY;
 
-        String coordinations = cutX + " " + cutY;
-
-        return coordinations;
+        return coordination;
     }
 
     void readFile(String filename, TextArea textArea){
@@ -342,6 +451,7 @@ public class NewGame {
         }
         textArea.setText(contentBuilder.toString());
     }
+
 
     boolean checkFileExists(String filename){
         boolean exists;
@@ -443,7 +553,6 @@ public class NewGame {
         System.out.println("Wykryto chęc zamknięcia okna");
 
         if( !(player1TextArea.getText().isEmpty() ) || !(player2TextArea.getText().isEmpty()) ){
-            System.out.println("Pola nie są puste");
 
             Alert alertClose = new Alert(Alert.AlertType.CONFIRMATION);
             alertClose.setHeaderText(null);
@@ -464,10 +573,14 @@ public class NewGame {
 
 
             } else if (resultClose.isPresent() && resultClose.get() == ButtonType.CANCEL) {
+
                 clearFile("player1.save");
                 clearFile("player2.save");
-                clearFile("save/player1-encoded.save");
-                clearFile("save/player2-encoded.save");
+
+                clearFile("save/player1X.save");
+                clearFile("save/player1Y.save");
+                clearFile("save/player2X.save");
+                clearFile("save/player2Y.save");
             }
         }
 
@@ -476,13 +589,11 @@ public class NewGame {
         }
     }
 
-    //This is the first function that starts.
     public void start() {
 
         Canvas canvas = new Canvas();
         Group root = new Group(canvas);
         Scene scene = new Scene(root, 1400, 1000);
-        boolean loadSave = false;
 
         for (String s : Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H")) { //OŚ X
             stack1.push(s);
@@ -508,19 +619,29 @@ public class NewGame {
             if (resultClose.isPresent() && resultClose.get() == ButtonType.OK) {
                 alertClose.close();
                 loadSave = true;
-                //TODO
-                //Ustawianie pionków na planszy
-
-
+                readCoordinations("save/player1X.save", Xstack);
+                readCoordinations("save/player1y.save", Ystack);
+                readCoordinations("save/player2X.save", Xstack2);
+                readCoordinations("save/player2Y.save", Ystack2);
 
             } else if (resultClose.isPresent() && resultClose.get() == ButtonType.CANCEL) {
                 clearFile("player1.save");
                 clearFile("player2.save");
+
+                clearFile("save/player1X.save");
+                clearFile("save/player1Y.save");
+                clearFile("save/player2X.save");
+                clearFile("save/player2Y.save");
+
             }
 
         }
 
+        drawSquares(scene, root);
 
+    }
+
+    void drawSquares(Scene scene, Group root){
         //Making the board. Stacking the squares.
         boolean red = true;
         for (int i = 0; i < 8; i++) {
@@ -612,7 +733,7 @@ public class NewGame {
         root.getChildren().add(minScoreLabel);
 
         Game game = new Game();
-        updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea, crownPicture);
+        updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
         Stage primaryStage = new Stage();
         primaryStage.setTitle("Warcaby!");
         primaryStage.getIcons().add(new Image("file:src/main/resources/com/checkers/warcaby/icon.png"));
@@ -625,7 +746,7 @@ public class NewGame {
             if (!game.hasFinished()) {
                 game.playNextMove(oneHuman, twoHuman, depth);
                 clearScene(root);
-                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea, crownPicture);
+                updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
             }
         });
 
