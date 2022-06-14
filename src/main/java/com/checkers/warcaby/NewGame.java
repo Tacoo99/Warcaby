@@ -122,11 +122,7 @@ public class NewGame {
 
         State state = game.getState();
 
-        int sizeX, sizeY, sizeX2, sizeY2;
-        sizeX = Xstack.size();
-        sizeY = Ystack.size();
-        sizeX2 = Xstack2.size();
-        sizeY2 = Ystack2.size();
+
         int a = 0;
 
         for (int i = 0; i < state.getMinPieceList().size(); i++) {
@@ -138,10 +134,10 @@ public class NewGame {
                     String Y = (String) Ystack.get(a);
 
 
-                    if (X != null) {
+                    if ( (X != null) && (Y != null)) {
 
-                        System.out.println(sizeX);
-                        System.out.println(sizeY);
+                        a++;
+
                         int intX = Integer.parseInt(X);
                         int intY = Integer.parseInt(Y);
 
@@ -256,19 +252,22 @@ public class NewGame {
         }
 
         for (int i = 0; i < state.getMaxPieceList().size(); i++) {
-
             Circle circle = new Circle();
+
+            int b = 0;
 
             if(loadSave){
 
-                String X2 = (String) Xstack2.get(a);
-                String Y2 = (String) Ystack2.get(a);
+                String X2 = (String) Xstack2.get(b);
+                String Y2 = (String) Ystack2.get(b);
+
 
 
                 if (X2 != null) {
 
-                    System.out.println(sizeX);
-                    System.out.println(sizeY);
+
+                    b++;
+
                     int intX2 = Integer.parseInt(X2);
                     int intY2 = Integer.parseInt(Y2);
 
@@ -297,17 +296,18 @@ public class NewGame {
 
             final Alert[] alert = new Alert[1];
             if (oneHuman) {
+                Circle finalCircle = circle;
                 circle.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
                     clearScene(root);
                     updateScene(root, game, chanceLabel, maxScoreLabel, minScoreLabel, player1TextArea, player2TextArea);
                     if (game.getState().isMaxChance()) {
-                        double dragBaseX = circle.getCenterX();
-                        double dragBaseY = circle.getCenterY();
+                        double dragBaseX = finalCircle.getCenterX();
+                        double dragBaseY = finalCircle.getCenterY();
                         int y = (int) (dragBaseX - 140) / 90;
                         int x = (int) (dragBaseY - 140) / 90;
 
-                        String X2 = String.valueOf(circle.getCenterX());
-                        String Y2 = String.valueOf(circle.getCenterY());
+                        String X2 = String.valueOf(finalCircle.getCenterX());
+                        String Y2 = String.valueOf(finalCircle.getCenterY());
                         fromCoordinations2 = cutXY(X2,Y2);
 
                         Piece p = state.getBoard().get(new Coordinate(x, y));
@@ -527,7 +527,7 @@ public class NewGame {
     }
 
     String chooseGameMode() {
-        final String[] arrayData = {"Człowiek vs AI", "Człowiek vs Człowiek", "AI vs AI",};
+        final String[] arrayData = {"Człowiek vs AI", "Człowiek vs Człowiek",};
         List<String> dialogData = Arrays.asList(arrayData);
         ChoiceDialog dialog = new ChoiceDialog(dialogData.get(0), dialogData);
         dialog.setTitle("Wybierz tryb");
